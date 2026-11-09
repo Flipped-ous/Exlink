@@ -1,8 +1,34 @@
 node_modules/
 dist/
 .pnpm-store/
-.cache/
-artifacts/
 *.log
+research/lissio/upstream/
+research/lissio/client-tree.json
+research/lissio/application-example.png
+artifacts/
+.cache/
+
+research/lissio/core/Lissio-*/
+research/lissio/core/*-tree.json
+
+# Source-only delivery: local research, superseded artwork and design runtime state
+research/
+design/archive/
+design/exlink-brand-reference*.png
+design/logo-v2-prompt.txt
+.impeccable/mocks/
+.impeccable/questions/
+.impeccable/review/
+
+# Local configuration and credentials
 .env
 .env.*
+!.env.example
+*.pem
+*.key
+coverage/
+release/
+out/
+*.exe
+*.msi
+*.zip

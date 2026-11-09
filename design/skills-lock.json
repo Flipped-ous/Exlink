@@ -1,0 +1,37 @@
+{
+  "recordedDate": "2026-11-08",
+  "installRoot": "C:/Users/35033/.agents/skills",
+  "hooksEnabled": false,
+  "designLead": "impeccable",
+  "skills": [
+    {
+      "name": "frontend-design",
+      "repo": "anthropics/skills",
+      "ref": "2c5958ecac7cee2b583967a2c4981d0f4a75c579",
+      "path": "skills/frontend-design",
+      "use": "reference only; not stacked with primary design workflow"
+    },
+    {
+      "name": "impeccable",
+      "version": "4.8.1",
+      "repo": "pbakaus/impeccable",
+      "ref": "924bbd194d02e5e15a227e75b5901fb0d7a4ecad",
+      "path": ".agents/skills/impeccable",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "web-design-guidelines",
+      "repo": "vercel-labs/agent-skills",
+      "ref": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "path": "skills/web-design-guidelines",
+      "licenseNote": "Selected upstream directory and repository root do not include a LICENSE file; original author metadata and source preserved."
+    }
+  ],
+  "engine": {
+    "version": "0.1.19",
+    "url": "https://github.com/pbakaus/impeccable/releases/download/engine-v0.1.19/impeccable-windows-x64.exe",
+    "sha256": "30427e0cfea383a0adbc5cc554481c3f18337eeabcc4eaf7d9bb48ad2e8b5676",
+    "verified": true,
+    "installed": "C:/Users/35033/.agents/skills/impeccable/scripts/bin/windows-x64/impeccable.exe"
+  }
+}
