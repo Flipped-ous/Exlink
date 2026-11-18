@@ -132,7 +132,7 @@ export class SessionEngine {
 }
 
 /** Preserve extrema from every selected channel on a shared time axis. Raw data is untouched. */
-export function minMaxWindow(frames: SampleFrame[], keys: string[], budget: number): SampleFrame[] {
+export function minMaxWindow<T extends SampleFrame>(frames: T[], keys: string[], budget: number): T[] {
   if (frames.length <= Math.max(2, budget) || !keys.length) return frames;
   const buckets = Math.max(1, Math.floor((Math.max(budget, 2 + 2 * keys.length) - 2) / (2 * keys.length)));
   const indices = new Set([0, frames.length - 1]);

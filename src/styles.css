@@ -36,3 +36,35 @@
 @media(max-width:1179px){.channel-row>.channel-swatch{display:block;visibility:hidden;width:0}}
 
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:1}
+
+.heading-actions .demo-run{color:var(--muted)}
+.serial-controls{display:flex;align-items:center;gap:6px;padding-left:9px;margin-left:2px;border-left:1px solid var(--border);white-space:nowrap}
+.serial-controls>select{min-width:78px;min-height:31px;padding:4px 6px;font-family:Consolas,"Microsoft YaHei UI",monospace}
+.serial-controls>button{min-height:31px}
+.serial-status{display:inline-flex;align-items:center;gap:5px;min-width:62px;margin-left:4px;color:var(--muted);font-size:11px}
+.serial-status.error-text{color:var(--danger)}
+.status-dot.connected{background:var(--rx)}
+.status-dot.failed{background:var(--danger)}
+.log-row time,.log-row .byte-count{font-family:Consolas,monospace;font-variant-numeric:tabular-nums}
+.chart-host .u-over.is-panning{cursor:grabbing}
+.scope-caption>span:last-child{white-space:nowrap}
+@media(max-width:1179px){
+  .waveform-panel{height:252px;flex-basis:252px;grid-template-columns:minmax(0,1fr);grid-template-rows:35px minmax(0,1fr) auto}
+  .scope-toolbar{right:45px}
+  .channel-section{grid-column:1;grid-row:3;border-left:0;border-top:1px solid var(--border)}
+  .channel-list{flex:none;max-height:57px}
+  .channel-row{grid-template-columns:13px 12px minmax(40px,1fr) 78px 66px 66px}
+  .channel-row>.channel-swatch{visibility:visible;width:12px}
+  .channel-columns{grid-template-columns:minmax(69px,1fr) 78px 66px 66px}
+}
+@media(max-width:1179px) and (max-height:760px){
+  .waveform-panel{height:220px;flex-basis:220px}
+  .channel-list{max-height:46px}
+}
+@media(max-width:850px){
+  .serial-controls{gap:4px;padding-left:6px}
+  .serial-controls>select{min-width:70px}
+  .serial-controls>button{padding-inline:7px}
+  .serial-controls>button>svg{display:none}
+  .heading-actions .demo-run{padding-inline:6px}
+}

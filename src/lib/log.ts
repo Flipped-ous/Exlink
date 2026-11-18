@@ -1,6 +1,9 @@
 export type Direction = 'RX' | 'TX' | 'SYS';
-export type LogEntry = { id: number; timestamp: number; direction: Direction; bytes: number[]; source: 'demo' | 'file' };
+export type LogSource = 'demo' | 'file' | 'serial';
+export type LogEntry = { id: number; timestamp: number; direction: Direction; bytes: number[]; source: LogSource };
 export type LogFilter = { direction: 'ALL' | Direction; query: string; format: 'text' | 'hex' };
+let sequence = 0;
+export const nextLogId = () => ++sequence;
 const encoder = new TextEncoder();
 export const toBytes = (s: string): number[] => Array.from(encoder.encode(s));
 export const toHex = (bytes: number[]): string => bytes.map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');

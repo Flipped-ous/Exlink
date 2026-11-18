@@ -1,6 +1,5 @@
-import { toBytes, type Direction, type LogEntry } from './log';
-let sequence = 0;
-export const makeEntry = (message: string, direction: Direction = 'RX'): LogEntry => ({ id: ++sequence, timestamp: Date.now(), direction, bytes: toBytes(message), source: 'demo' });
+import { nextLogId, toBytes, type Direction, type LogEntry } from './log';
+export const makeEntry = (message: string, direction: Direction = 'RX'): LogEntry => ({ id: nextLogId(), timestamp: Date.now(), direction, bytes: toBytes(message), source: 'demo' });
 export function demoRows() {
   const start = Date.now() - 10000;
   const rows = [{ ...makeEntry('四通道本地演示已就绪。硬件未连接。', 'SYS'), timestamp: start - 100 }];

@@ -4,8 +4,9 @@ import Terminal from './components/Terminal';
 import Waveform from './components/Waveform';
 import { ConnectionPopover, IconButton, SettingRow, Toggle } from './components/UI';
 import { demoRows, makeEntry, sampleEntry } from './lib/demo';
-import { deserializeLogs, toBytes, toText, type LogEntry } from './lib/log';
+import { deserializeLogs, nextLogId, toBytes, toText, type LogSource } from './lib/log';
 import { defaultPreferences, preferenceKey, readPreferences, type Preferences } from './lib/preferences';
+import { baudRates, serialError, type SerialOptions } from './lib/serial';
 import { SessionEngine, StreamDecoder, type Protocol, type SessionSnapshot } from './core/session';
 
 type Tool = 'serial' | 'logic' | 'power' | 'tools' | 'settings';
@@ -16,17 +17,81 @@ const tools = [
   { id: 'tools' as const, title: '工具箱', icon: LayoutGrid },
 ];
 const protocolLabels: Record<Protocol, string> = { 'key-value': '名称:数值', csv: 'CSV', 'just-float': 'JustFloat' };
+type Connection = { id: number; path: string; phase: 'connecting' | 'connected' | 'closing' };
+
 export default function App() {
   const [tool, setTool] = useState<Tool>('serial'), [prefs, setPrefs] = useState<Preferences>(readPreferences);
   const [engine] = useState(() => new SessionEngine(demoRows()));
   const session = useSyncExternalStore(engine.subscribe, engine.getSnapshot);
   const [frozen, setFrozen] = useState<SessionSnapshot | null>(null), [demoRunning, setDemoRunning] = useState(false);
-  const [source, setSource] = useState<'demo' | 'file'>('demo'), [filename, setFilename] = useState('');
+  const [source, setSource] = useState<LogSource>('demo'), [sourceName, setSourceName] = useState('');
   const [toast, setToast] = useState(''), [connectionOpen, setConnectionOpen] = useState(false);
-  const [protocol, setProtocol] = useState<Protocol>('key-value'), [baud, setBaud] = useState('115200');
+  const [protocol, setProtocol] = useState<Protocol>('key-value');
+  const [serialOptions, setSerialOptions] = useState<SerialOptions>({
+    path: '', baudRate: 115200, dataBits: 8, stopBits: 1, parity: 'none',
+  });
+  const [ports, setPorts] = useState<string[]>([]);
+  const [connection, setConnection] = useState<Connection | null>(null);
+  const [connectionError, setConnectionError] = useState('');
+  const currentConnection = useRef<Connection | null>(null);
+  const nextConnectionId = useRef(0);
+  const sourceRevision = useRef(0);
+  const portRefresh = useRef(0);
+  const bridge = window.exlinkSerial;
   const connectionTrigger = useRef<HTMLButtonElement>(null), timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const notice = useCallback((message: string) => { clearTimeout(timer.current); setToast(message); timer.current = setTimeout(() => setToast(''), 4500); }, []);
   const patch = useCallback((value: Partial<Preferences>) => setPrefs(prev => ({ ...prev, ...value })), []);
+  const changeConnection = useCallback((value: Connection | null) => {
+    currentConnection.current = value;
+    setConnection(value);
+  }, []);
+  const refreshPorts = useCallback(async (reportError = false) => {
+    if (!bridge) return;
+    const revision = ++portRefresh.current;
+    try {
+      const available = await bridge.list();
+      if (revision !== portRefresh.current) return;
+      setPorts(available);
+      if (!currentConnection.current) {
+        setSerialOptions(options => ({ ...options, path: available.includes(options.path) ? options.path : available[0] ?? '' }));
+      }
+    } catch (error) {
+      if (revision === portRefresh.current && reportError) notice(serialError(error));
+    }
+  }, [bridge, notice]);
+  useEffect(() => {
+    if (!bridge) return;
+    const unsubscribe = bridge.onEvent(event => {
+      const current = currentConnection.current;
+      if (!current || current.id !== event.id) return;
+      if (event.type === 'opened') {
+        changeConnection({ ...current, phase: 'connected' });
+        clearTimeout(timer.current);
+        setToast('');
+        setDemoRunning(false);
+        setSource('serial');
+        setSourceName(current.path);
+        setFrozen(null);
+        engine.replace([]);
+      } else if (event.type === 'closed') {
+        changeConnection(null);
+        if (event.error) {
+          setConnectionError(event.error);
+          notice(event.error);
+        }
+        void refreshPorts();
+      } else {
+        engine.append(event.records.map(record => ({ ...record, id: nextLogId(), source: 'serial', bytes: Array.from(record.bytes) })));
+      }
+    });
+    const refreshOnFocus = () => void refreshPorts();
+    window.addEventListener('focus', refreshOnFocus);
+    void refreshPorts();
+    return () => {
+      unsubscribe();
+      window.removeEventListener('focus', refreshOnFocus);
+    };
+  }, [bridge, changeConnection, engine, notice, refreshPorts]);
   useEffect(() => {
     document.documentElement.dataset.theme = prefs.theme; document.documentElement.dataset.glass = String(prefs.glass);
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', prefs.theme === 'dark' ? '#101018' : '#e8e8f2');
@@ -39,23 +104,73 @@ export default function App() {
   useEffect(() => {
     if (!demoRunning) return;
     const origin = Date.now() - 10000;
-    const id = setInterval(() => engine.append([sampleEntry((Date.now() - origin) / 1000)]), 100);
+    const id = setInterval(() => {
+      if (currentConnection.current?.phase !== 'connected') engine.append([sampleEntry((Date.now() - origin) / 1000)]);
+    }, 100);
     return () => clearInterval(id);
   }, [demoRunning, engine]);
   const totals = useMemo(() => session.entries.reduce((n, entry) => { if (entry.direction === 'RX') n.rx += entry.bytes.length; if (entry.direction === 'TX') n.tx += entry.bytes.length; return n; }, { rx: 0, tx: 0 }), [session.entries]);
   const shown = frozen || session, waveVisible = prefs.wave && !prefs.waveCollapsed;
   const newer = frozen ? session.entries.filter(e => e.id > (frozen.entries.at(-1)?.id ?? 0)).length : 0;
-  function loadDemo() { setDemoRunning(false); engine.setProtocol('key-value'); setProtocol('key-value'); engine.replace(demoRows()); setSource('demo'); setFilename(''); setFrozen(null); notice('四通道演示已就绪。'); }
-  async function importLog(file: File) {
-    if (file.size > 10 * 1024 * 1024) return notice('文件超过 10 MB，请分段导入。');
+  async function openSerial() {
+    if (!bridge || Boolean(currentConnection.current) || !serialOptions.path) return;
+    sourceRevision.current++;
+    const attempt: Connection = { id: ++nextConnectionId.current, path: serialOptions.path, phase: 'connecting' };
+    changeConnection(attempt);
+    setConnectionError('');
+    setConnectionOpen(false);
     try {
-      const entries = deserializeLogs(await file.text()).map(entry => ({ ...entry, id: makeEntry('').id }));
-      setDemoRunning(false); engine.replace(entries); setSource('file'); setFilename(file.name); setFrozen(null);
-      notice(`已导入 ${entries.length.toLocaleString()} 条记录。`);
-    } catch (error) { notice((error as Error).message); }
+      await bridge.open(attempt.id, serialOptions);
+    } catch (error) {
+      if (currentConnection.current?.id !== attempt.id) return;
+      changeConnection(null);
+      setConnectionError(serialError(error));
+      notice(serialError(error));
+      void refreshPorts();
+    }
   }
-  function send(bytes: number[]) {
-    if (source !== 'demo') return;
+  async function closeSerial() {
+    const current = currentConnection.current;
+    if (!bridge || current?.phase !== 'connected') return;
+    changeConnection({ ...current, phase: 'closing' });
+    try {
+      await bridge.close(current.id);
+    } catch (error) {
+      if (currentConnection.current?.id === current.id) changeConnection(current);
+      notice(serialError(error));
+    }
+  }
+  function loadDemo() {
+    if (currentConnection.current) return;
+    sourceRevision.current++;
+    setDemoRunning(false);
+    engine.setProtocol('key-value');
+    setProtocol('key-value');
+    engine.replace(demoRows());
+    setSource('demo');
+    setSourceName('');
+    setFrozen(null);
+    notice('四通道演示已就绪。');
+  }
+  async function importLog(file: File) {
+    if (currentConnection.current) return;
+    if (file.size > 10 * 1024 * 1024) return notice('文件超过 10 MB，请分段导入。');
+    const revision = ++sourceRevision.current;
+    try {
+      const data = await file.text();
+      if (revision !== sourceRevision.current) return;
+      const entries = deserializeLogs(data).map(entry => ({ ...entry, id: nextLogId() }));
+      setDemoRunning(false); engine.replace(entries); setSource('file'); setSourceName(file.name); setFrozen(null);
+      notice(`已导入 ${entries.length.toLocaleString()} 条记录。`);
+    } catch (error) { if (revision === sourceRevision.current) notice((error as Error).message); }
+  }
+  async function send(bytes: number[]) {
+    if (source === 'serial' && bridge && currentConnection.current?.phase === 'connected') {
+      try { await bridge.send(currentConnection.current.id, Uint8Array.from(bytes)); }
+      catch (error) { throw new Error(serialError(error)); }
+      return;
+    }
+    if (source !== 'demo' || currentConnection.current) throw new Error('请先连接串口。');
     const command = toText(bytes).trim();
     const reply = command === 'status' ? '[INFO] demo=ON, hardware=DISCONNECTED\r\n' : command === 'help' ? '[DEMO] status / help — local simulator\r\n' : '[DEMO] command received\r\n';
     engine.append([{ ...makeEntry('', 'TX'), bytes }, makeEntry(reply)]);
@@ -64,23 +179,81 @@ export default function App() {
   function toggleWave() { patch({ wave: true, waveCollapsed: waveVisible }); }
   function go(next: Tool) { setConnectionOpen(false); setTool(next); }
   const title = tools.find(t => t.id === tool)?.title || '设置';
+  const connected = connection?.phase === 'connected';
+  const serialStatus = connected ? '已连接'
+    : connection?.phase === 'connecting' ? '连接中'
+    : connection?.phase === 'closing' ? '断开中'
+    : connectionError ? source === 'serial' ? '连接异常' : '连接失败' : '未连接';
+  const statusDot = `status-dot${connected ? ' connected' : connectionError ? ' failed' : ''}`;
+  const selectedPort = connection?.path ?? serialOptions.path;
+  const sourceLabel = source === 'demo' ? '本地演示' : source === 'file' ? '离线文件' : `${sourceName} · 真实串口`;
   return <div className="app-shell">
     <a className="skip-link" href="#workspace">跳到工作区</a>
     <div className="ambient-light" aria-hidden="true"/>
     <aside className="activity-bar glass">
       <div className="brand-lockup" aria-label="EXLINK Studio"><img src="./brand/exlink-ribbon-dark-v3.png" width="48" height="48" alt=""/><strong>EXLINK</strong><span>Studio</span></div>
       <nav aria-label="主工具">{tools.map(({ id, title, icon: Icon }) => <button key={id} className={`nav-button ${tool === id ? 'active' : ''}`} onClick={() => go(id)} aria-current={tool === id ? 'page' : undefined}><Icon size={21} aria-hidden="true"/><span>{title}</span></button>)}</nav>
-      <div className="rail-bottom"><span className="rail-device" title="硬件通信将在设备完成后适配"><span className="status-dot"/>未连接</span><button className={`nav-button ${tool === 'settings' ? 'active' : ''}`} onClick={() => go('settings')} aria-current={tool === 'settings' ? 'page' : undefined}><Settings size={21} aria-hidden="true"/><span>设置</span></button></div>
+      <div className="rail-bottom"><span className="rail-device"><span className={statusDot}/>{serialStatus}</span><button className={`nav-button ${tool === 'settings' ? 'active' : ''}`} onClick={() => go('settings')} aria-current={tool === 'settings' ? 'page' : undefined}><Settings size={21} aria-hidden="true"/><span>设置</span></button></div>
     </aside>
     <main className="main-area" id="workspace" tabIndex={-1}>
-      <header className="workspace-heading"><div className="workspace-heading-title"><h1>{title}</h1><span className="session-label">{tool === 'serial' ? source === 'demo' ? '四通道信号' : filename : 'EXLINK Studio'}</span>{tool === 'serial' && <span className="demo-badge">{source === 'demo' ? '演示' : '离线'}</span>}</div><div className="heading-actions">{tool === 'serial' ? <><IconButton label="重新载入演示" onClick={loadDemo}><RotateCcw size={15}/></IconButton><button className={`quiet wave-toggle ${waveVisible ? 'selected' : ''}`} onClick={toggleWave} aria-expanded={waveVisible} aria-controls="waveform-panel">{waveVisible ? <PanelRightClose size={16}/> : <PanelRightOpen size={16}/>}<span>{waveVisible ? '收起波形' : '展开波形'}</span></button><button ref={connectionTrigger} className={`secondary ${connectionOpen ? 'selected' : ''}`} aria-controls="connection-popover" aria-expanded={connectionOpen} onClick={() => setConnectionOpen(!connectionOpen)}><Usb size={16}/>连接配置<ChevronDown size={13}/></button><button className={`primary ${demoRunning ? 'is-running' : ''}`} disabled={source !== 'demo'} onClick={() => setDemoRunning(!demoRunning)}>{demoRunning ? <Square size={13}/> : <Play size={14}/>}<span>{demoRunning ? '停止演示' : '运行演示'}</span></button></> : <span className="header-device"><Usb size={15}/>设备未连接</span>}</div></header>
+      <header className="workspace-heading">
+        <div className="workspace-heading-title">
+          <h1>{title}</h1>
+          {tool === 'serial' && source !== 'serial' && <span className="demo-badge" title={sourceName || undefined}>{source === 'demo' ? '演示' : '离线'}</span>}
+        </div>
+        <div className="heading-actions">
+          {tool === 'serial' ? <>
+            {!connection && <IconButton label={source === 'demo' ? '重新载入演示' : '载入演示'} onClick={loadDemo}><RotateCcw size={15}/></IconButton>}
+            {source === 'demo' && !connection && <button className={`quiet demo-run ${demoRunning ? 'selected' : ''}`} onClick={() => setDemoRunning(!demoRunning)}>
+              {demoRunning ? <Square size={13}/> : <Play size={14}/>}<span>{demoRunning ? '停止演示' : '运行演示'}</span>
+            </button>}
+            <button className={`quiet wave-toggle ${waveVisible ? 'selected' : ''}`} onClick={toggleWave} aria-label={waveVisible ? '收起波形' : '展开波形'} aria-expanded={waveVisible} aria-controls="waveform-panel">
+              {waveVisible ? <PanelRightClose size={16}/> : <PanelRightOpen size={16}/>}<span>{waveVisible ? '收起波形' : '展开波形'}</span>
+            </button>
+            <div className="serial-controls">
+              <select aria-label="串口" value={selectedPort} disabled={!bridge || !!connection || !ports.length}
+                onChange={e => { setSerialOptions({ ...serialOptions, path: e.target.value }); setConnectionError(''); }}>
+                {!selectedPort && <option value="">{bridge ? '无可用串口' : '桌面串口'}</option>}
+                {selectedPort && !ports.includes(selectedPort) && <option value={selectedPort}>{selectedPort}</option>}
+                {ports.map(port => <option key={port}>{port}</option>)}
+              </select>
+              <select aria-label="波特率" value={serialOptions.baudRate} disabled={!bridge || !!connection}
+                onChange={e => setSerialOptions({ ...serialOptions, baudRate: Number(e.target.value) })}>
+                {baudRates.map(rate => <option key={rate}>{rate}</option>)}
+              </select>
+              <button ref={connectionTrigger} className={`secondary ${connectionOpen ? 'selected' : ''}`} aria-controls="connection-popover" aria-expanded={connectionOpen}
+                onClick={() => { if (!connectionOpen) void refreshPorts(); setConnectionOpen(!connectionOpen); }}>
+                <SlidersHorizontal size={14}/>连接配置
+              </button>
+              <button className={connected ? 'secondary' : 'primary'} disabled={!bridge || (!connected && (!!connection || !selectedPort))}
+                onClick={() => void (connected ? closeSerial() : openSerial())}>
+                <PlugZap size={14}/>{connected ? '断开' : '连接串口'}
+              </button>
+              <span className={`serial-status ${connectionError ? 'error-text' : ''}`} aria-live="polite" title={connectionError || undefined}>
+                <span className={statusDot}/>{serialStatus}
+              </span>
+            </div>
+          </> : <span className="header-device"><Usb size={15}/>设备未连接</span>}
+        </div>
+      </header>
       {tool === 'serial' ? <><div className={`serial-workspace ${waveVisible ? 'with-wave' : 'without-wave'}`}>
-          <Terminal entries={shown.entries} paused={!!frozen} onPause={() => setFrozen(frozen ? null : session)} onClear={() => { engine.clearLogs(); setFrozen(prev => prev ? { ...prev, entries: [] } : null); }} onSend={send} onImport={importLog} dropped={session.dropped} newer={newer} showCommands={prefs.commands} onNotice={notice} source={source}/>
-          {waveVisible && <Waveform frames={shown.samples} theme={prefs.theme} demo={source === 'demo'} hiddenChannels={prefs.hiddenChannels} channelUnits={prefs.channelUnits} onHiddenChange={hiddenChannels => patch({ hiddenChannels })} onCollapse={toggleWave} dropped={session.sampleDropped}/>}
+          <Terminal entries={shown.entries} epoch={shown.epoch} paused={!!frozen} onPause={() => setFrozen(frozen ? null : session)} onClear={() => { engine.clearLogs(); setFrozen(prev => prev ? { ...prev, entries: [] } : null); }} onSend={send} onImport={importLog} dropped={session.dropped} newer={newer} showCommands={prefs.commands && source === 'demo'} onNotice={notice} source={source} sourceLabel={sourceLabel} canSend={source === 'demo' ? !connection : connected} canImport={!connection}/>
+          {waveVisible && <Waveform key={shown.epoch} frames={shown.samples} theme={prefs.theme} demo={source === 'demo'} hiddenChannels={prefs.hiddenChannels} channelUnits={prefs.channelUnits} onHiddenChange={hiddenChannels => patch({ hiddenChannels })} onCollapse={toggleWave} dropped={session.sampleDropped}/>}
         </div></> : tool === 'settings' ? <SettingsPage channelKeys={[...new Set(session.samples.flatMap(f => Object.keys(f.values)))].slice(0,32)} demo={source === 'demo'} prefs={prefs} patch={patch} protocol={protocol} onProtocol={changeProtocol} notice={notice}/> : tool === 'logic' ? <LogicPage/> : tool === 'power' ? <PowerPage notice={notice}/> : <Toolbox onSerial={() => go('serial')} notice={notice}/>}
-      <footer className="status-bar"><span><span className="status-dot"/>硬件未连接</span><span className="status-note">{demoRunning ? '演示接收中' : source === 'file' ? '离线文件' : '本地演示'}</span><div className="status-spacer"/><span className="transfer-stat"><ArrowDownLeft size={12}/>RX {totals.rx.toLocaleString()} B</span><span className="transfer-stat"><ArrowUpRight size={12}/>TX {totals.tx.toLocaleString()} B</span><span title={session.lastParseIssue} className={session.parseErrors ? 'warning-text' : ''}>{session.parseErrors ? `解析异常 ${session.parseErrors}` : `${session.samples.length.toLocaleString()} 帧`}</span><IconButton label="快捷键提示" onClick={() => notice('Ctrl+F 搜索日志，Ctrl+Enter 发送，Ctrl+, 打开设置，Escape 关闭浮层。')}><CircleHelp size={14}/></IconButton></footer>
+      <footer className="status-bar"><span title={sourceName || undefined}>{demoRunning ? '演示接收中' : sourceLabel}</span><div className="status-spacer"/><span className="transfer-stat"><ArrowDownLeft size={12}/>RX {totals.rx.toLocaleString()} B</span><span className="transfer-stat"><ArrowUpRight size={12}/>TX {totals.tx.toLocaleString()} B</span><span title={session.lastParseIssue || ''} className={session.parseErrors ? 'warning-text' : ''}>{session.parseErrors ? `解析异常 ${session.parseErrors}` : `${session.samples.length.toLocaleString()} 帧`}</span><IconButton label="快捷键提示" onClick={() => notice('Ctrl+F 搜索日志，Ctrl+Enter 发送，Ctrl+, 打开设置，Escape 关闭浮层。')}><CircleHelp size={14}/></IconButton></footer>
     </main>
-    {connectionOpen && <ConnectionPopover trigger={connectionTrigger} onClose={() => setConnectionOpen(false)}><div className="connection-fields"><label className="field">数据源<select value={source} onChange={e => { if (e.target.value === 'demo') loadDemo(); }}><option value="demo">本地演示信号</option>{source === 'file' && <option value="file">{filename}</option>}<option disabled>硬件串口 · 待适配</option></select></label><div className="form-section-title">通信参数</div><label className="field">串口<select disabled><option>未连接硬件设备</option></select></label><div className="two-fields"><label className="field">波特率<select value={baud} onChange={e => setBaud(e.target.value)}>{['9600','115200','460800','921600'].map(value => <option key={value}>{value}</option>)}</select></label><label className="field">校验<select defaultValue="None"><option>None</option><option>Even</option><option>Odd</option></select></label></div><div className="two-fields"><label className="field">数据位<select defaultValue="8"><option>8</option><option>7</option></select></label><label className="field">停止位<select defaultValue="1"><option>1</option><option>2</option></select></label></div><div className="form-section-title">接收解析</div><label className="field">解析协议<select value={protocol} onChange={e => changeProtocol(e.target.value as Protocol)}><option value="key-value">名称:数值 · 逐行</option><option value="csv">CSV · 逐行</option><option value="just-float">JustFloat · 二进制</option></select></label><p className="hint">参数暂存于本地。设备完成后接入真实通信。</p><button className="secondary" disabled><PlugZap size={15}/>连接设备</button></div></ConnectionPopover>}
+    {connectionOpen && <ConnectionPopover trigger={connectionTrigger} onClose={() => setConnectionOpen(false)}>
+      <div className="connection-fields">
+        <div className="two-fields">
+          <label className="field">数据位<select disabled={!!connection} value={serialOptions.dataBits} onChange={e => setSerialOptions({ ...serialOptions, dataBits: Number(e.target.value) as 7 | 8 })}><option>8</option><option>7</option></select></label>
+          <label className="field">停止位<select disabled={!!connection} value={serialOptions.stopBits} onChange={e => setSerialOptions({ ...serialOptions, stopBits: Number(e.target.value) as 1 | 2 })}><option>1</option><option>2</option></select></label>
+        </div>
+        <label className="field">校验<select disabled={!!connection} value={serialOptions.parity} onChange={e => setSerialOptions({ ...serialOptions, parity: e.target.value as SerialOptions['parity'] })}><option value="none">无校验</option><option value="even">偶校验</option><option value="odd">奇校验</option></select></label>
+        <label className="field">解析协议<select value={protocol} onChange={e => changeProtocol(e.target.value as Protocol)}><option value="key-value">名称:数值 · 逐行</option><option value="csv">CSV · 逐行</option><option value="just-float">JustFloat · 二进制</option></select></label>
+        {connection && <p className="hint">断开串口后可更改通信参数。</p>}
+        {bridge && !connection && <button className="secondary" onClick={() => void refreshPorts(true)}><RotateCcw size={14}/>刷新串口列表</button>}
+      </div>
+    </ConnectionPopover>}
     {toast && <div className="toast glass" role="status"><Info size={17}/><span>{toast}</span><IconButton label="关闭提示" onClick={() => setToast('')}><X size={15}/></IconButton></div>}
   </div>;
 }
@@ -94,7 +267,7 @@ function SettingsPage({ prefs, patch, protocol, onProtocol, notice, channelKeys,
     {tab === 'appearance' && <><div className="theme-previews"><button className={`theme-preview dark-preview ${prefs.theme === 'dark' ? 'chosen' : ''}`} onClick={() => patch({theme:'dark'})} aria-pressed={prefs.theme === 'dark'}><span className="mini-window"><i/><b/><em/></span><span>深色 <small>夜间工作台</small></span></button><button className={`theme-preview light-preview ${prefs.theme === 'light' ? 'chosen' : ''}`} onClick={() => patch({theme:'light'})} aria-pressed={prefs.theme === 'light'}><span className="mini-window"><i/><b/><em/></span><span>浅色 <small>明亮工作环境</small></span></button></div><SettingRow title="液态玻璃" description="通透表面、流动高光与层叠材质"><Toggle label="液态玻璃" checked={prefs.glass} onChange={glass => patch({glass})}/></SettingRow><SettingRow title="界面字体" description="界面与数据使用各自适合的字体"><span className="subtle">系统字体 / 等宽数据字体</span></SettingRow></>}
     {tab === 'workspace' && <><SettingRow title="串口波形" description="在日志旁显示多通道波形，可随时收起"><Toggle label="启用串口波形" checked={prefs.wave} onChange={wave => patch({wave, waveCollapsed: !wave})}/></SettingRow><SettingRow title="快捷指令" description="在发送区显示常用指令"><Toggle label="显示快捷指令" checked={prefs.commands} onChange={commands => patch({commands})}/></SettingRow><SettingRow title="通道显示" description="恢复所有通道的可见状态"><button className="secondary" onClick={() => { patch({hiddenChannels:[]}); notice('所有通道已设为可见。'); }}>显示全部通道</button></SettingRow><button className="quiet reset-preferences" onClick={() => { patch({...defaultPreferences,hiddenChannels:[]}); notice('已恢复默认设置。'); }}><RotateCcw size={14}/>恢复默认设置</button></>}
     {tab === 'data' && <><SettingRow title="接收解析协议" description="更改后从当前保留的原始字节重建波形"><select value={protocol} onChange={e => onProtocol(e.target.value as Protocol)}>{Object.entries(protocolLabels).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></SettingRow><SettingRow title="数据保留" description="达到上限后淘汰最早数据，原始日志与曲线独立保留"><span>5,000 条日志 / 20,000 帧</span></SettingRow><h3>通道单位</h3><p className="hint">不同单位分组显示，设置仅用于图表标注，不换算数值。</p><div className="unit-settings">{channelKeys.map(key => <label className="field" key={key}>{key}<select aria-label={`通道 ${key} 单位`} value={Object.hasOwn(prefs.channelUnits,key) ? prefs.channelUnits[key] : (demo && /^CH[1-4]$/.test(key) ? 'V' : '数值')} onChange={e => patch({channelUnits:{...prefs.channelUnits,[key]:e.target.value}})}>{['数值','V','A','RPM','°C','Hz'].map(unit => <option key={unit}>{unit}</option>)}</select></label>)}</div><h3>名称:数值解析预览</h3><p className="hint">使用与接收数据相同的解析器，不发送到设备。</p><div className="parse-form"><label className="field">样例帧<input value={sample} onChange={e => setSample(e.target.value)} autoComplete="off" spellCheck={false}/></label><button className="primary" onClick={preview}>预览解析</button></div>{error && <p className="error-text" role="alert">{error}</p>}{result.length > 0 && <table className="data-table"><thead><tr><th>通道</th><th>数值</th></tr></thead><tbody>{result.map(([key,value]) => <tr key={key}><td>{key}</td><td>{value}</td></tr>)}</tbody></table>}</>}
-    {tab === 'about' && <div className="about-app"><img src="./brand/exlink-ribbon-dark-v3.png" width="88" height="88" alt="EXLINK 标志"/><h2>EXLINK Studio</h2><span>0.1.0 · UI 预览版</span><p>串口调试、多通道波形、逻辑分析与智能电源工作台。</p><p className="hint">当前提供本地演示与日志文件交互。硬件通信将在设备完成后适配。</p></div>}
+    {tab === 'about' && <div className="about-app"><img src="./brand/exlink-ribbon-dark-v3.png" width="88" height="88" alt="EXLINK 标志"/><h2>EXLINK Studio</h2><span>0.1.0 · Windows 调试助手</span><p>串口调试、多通道波形、逻辑分析与智能电源工作台。</p><p className="hint">支持 Windows COM 串口、本地演示和 JSONL 回放。</p></div>}
   </div></section>;
 }
 function LogicPage() {
