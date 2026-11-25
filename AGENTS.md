@@ -1,4 +1,4 @@
-# EXLINK PRO 2.0｜Codex 全局开发规范 V1.0
+# EXLINK PRO 2.0｜Codex 全局开发规范 V1.1
 
 ## 1. 职责和任务边界
 - 用户确认产品方向、技术决策和实际硬件验收；ChatGPT 负责需求、架构、任务书、独立审查与项目管理；Codex 负责工程实现、构建、测试和修复。
@@ -20,7 +20,7 @@
 
 ## 3. 实现原则与技术选型
 - 当前 S0 为源码审计与架构评审阶段；未授权正式开发前不得生成业务工程或假装功能完成。
-- ESP32 候选 ESP-IDF、FreeRTOS、C/C++、LVGL；版本以兼容性审计和经批准的锁定记录为准。
+- ESP32 已确认 PlatformIO + Arduino-ESP32、FreeRTOS、C/C++、LVGL；允许使用兼容的 ESP-IDF 原生 API，具体版本以兼容性审计和经批准的锁定记录为准。不擅自迁移原生 ESP-IDF 或 Arduino Component；OTA 实际 bootloader 回滚配置、签名校验和有线恢复必须独立验证。
 - Studio 保留现有 Electron 工程；不擅自迁移 Tauri、替换框架或重构无关模块。
 - Companion Flutter/Dart、独立模拟服务 Python/asyncio 均为候选，不视为已冻结。
 - 真实 HAL 与 Mock HAL 使用清晰一致的接口；本机 UI、业务服务与硬件驱动解耦。RP2040、CH549 的原生 USB 工具协议独立保留，不假设存在未经证实的内部连线。
