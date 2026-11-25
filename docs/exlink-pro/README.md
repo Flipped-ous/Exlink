@@ -16,6 +16,8 @@
 - [第三方参考](../../third_party/)
 - [项目资料索引与最新来源](sources/README.md)
 - [R4 后续决议](sources/latest-decisions.md)
+- [S0-05 参考固件审计](source-audit.md)
+- [S0-06 Codex 技术选型任务书](tasks/S0-06-codex-feasibility.md)
 - [软件架构初稿](architecture.md)
 - [阶段任务与进度](roadmap.md)
 
