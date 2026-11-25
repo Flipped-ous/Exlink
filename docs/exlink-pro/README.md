@@ -2,14 +2,15 @@
 
 状态：S0 源码审计与技术选型；尚未完成正式软件架构冻结或整机实测。
 
-## 模块导航
+## 模块分支
 
-- [硬件](../../hardware/)
-- [设备固件](../../firmware/)
-- [Studio](../../studio/)（沿用既有 Electron 工程）
-- [Companion](../../companion/)
-- [Simulator](../../simulator/)
-- [Protocol](../../protocol/)
+- [硬件](https://github.com/Flipped-ous/Exlink/tree/hardware)（hardware）
+- [设备固件](https://github.com/Flipped-ous/Exlink/tree/firmware)（firmware）
+- [Studio](https://github.com/Flipped-ous/Exlink/tree/%E8%B0%83%E8%AF%95%E5%8A%A9%E6%89%8B)（调试助手，现有 Electron 工程）
+- [Companion](https://github.com/Flipped-ous/Exlink/tree/companion)（companion）
+- [Simulator](https://github.com/Flipped-ous/Exlink/tree/simulator)（simulator）
+- [分支管理规范](branches.md)
+- [公共协议](../../protocol/)
 - [第三方参考](../../third_party/)
 - [软件架构初稿](architecture.md)
 - [阶段任务与进度](roadmap.md)

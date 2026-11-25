@@ -1,0 +1,14 @@
+# EXLINK PRO 分支管理规范
+
+| 分支 | 职责 | 主要维护路径 |
+|---|---|---|
+| `exlink-pro` | 整机集成、项目总管理、公共协议及版本协调 | `docs/exlink-pro/`、`protocol/` |
+| `hardware` | 双板 PCB、BOM、结构与板级接口 | `hardware/` |
+| `firmware` | ESP32、RP2040、CH549 固件及本机 LVGL UI | `firmware/` |
+| `调试助手` | EXLINK Studio Windows 电脑端，沿用现有 Electron 实现 | 现有 `src/`、`desktop/`、构建配置 |
+| `companion` | EXLINK Companion 手机端 | `companion/` |
+| `simulator` | 虚拟设备、故障注入与跨端模拟联调 | `simulator/` |
+
+各长期分支共享 Git 历史，并非文件访问隔离。专项分支仅维护对应模块；固件侧 Mock HAL 由 firmware 维护，独立模拟设备由 simulator 维护。UI 随设备固件维护，不额外建长期分支。协议由整机集成分支统一维护，其他分支通过审查后的同步获取约定版本。跨模块改动通过 PR 审查后集成到 exlink-pro；调试助手原有路径保留，集成前检查冲突。各模块独立构建和验证，使用短期 feature/fix 分支处理较大变更。
+
+当前默认分支保持 `调试助手`，未删除、重命名或强制重写任何分支。仓库公开，不上传内部硬件工程、采购信息、密钥或未获许可第三方文件，直至明确发布权限。
