@@ -4,11 +4,11 @@
 
 ## 模块分支
 
-- [硬件](https://github.com/Flipped-ous/Exlink/tree/hardware)（hardware）
-- [设备固件](https://github.com/Flipped-ous/Exlink/tree/firmware)（firmware）
+- [硬件](https://github.com/Flipped-ous/Exlink/tree/%E7%A1%AC%E4%BB%B6%E8%AE%BE%E8%AE%A1)（硬件设计）
+- [设备固件](https://github.com/Flipped-ous/Exlink/tree/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%9B%BA%E4%BB%B6)（嵌入式固件）
 - [Studio](https://github.com/Flipped-ous/Exlink/tree/%E8%B0%83%E8%AF%95%E5%8A%A9%E6%89%8B)（调试助手，现有 Electron 工程）
-- [Companion](https://github.com/Flipped-ous/Exlink/tree/companion)（companion）
-- [Simulator](https://github.com/Flipped-ous/Exlink/tree/simulator)（simulator）
+- [Companion](https://github.com/Flipped-ous/Exlink/tree/%E6%89%8B%E6%9C%BA%E5%8A%A9%E6%89%8B)（手机助手）
+- [Simulator](https://github.com/Flipped-ous/Exlink/tree/%E8%99%9A%E6%8B%9F%E8%AE%BE%E5%A4%87)（虚拟设备）
 - [分支管理规范](branches.md)
 - [公共协议](../../protocol/)
 - [第三方参考](../../third_party/)
