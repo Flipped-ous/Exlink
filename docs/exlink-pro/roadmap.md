@@ -24,3 +24,5 @@
 
 - ESP32 主框架：Arduino-ESP32 + PlatformIO（用户确认）；FreeRTOS、LVGL、C/C++；必要时调用原生 ESP-IDF API。
 - S0-06：框架方向已确定，具体版本、驱动、OTA/bootloader、授权和构建验证仍待完成。S1 未启动。
+
+- S0-07：六层固件架构 V0.3 评审稿已建立，目录、任务划分、资源与内存分配待详细设计；S0-06 版本验证仍未完成。
