@@ -13,3 +13,8 @@
 ## 暂未同步
 
 原始工程 Exlink2.0.epro2、屏幕规格书 PDF、BOM/采购 Excel、ZIP 参考包、视觉图片等仍在原资料库；本次未上传二进制文件、重复副本、历史截图或过时工程。R3/V4.9 等历史材料留在资料库，按需核查。仓库目前公开，未获许可的第三方原件与内部采购资料不得随意公开。原始硬件工程仍需核验后才能形成正式 GPIO/接口表。
+
+## 原件归档进度
+
+- [原始资料归档清单](original-files.md)：逐项标注最新原件与历史资料、目标分支和实际上传状态。
+- [屏幕规格书索引](https://github.com/Flipped-ous/Exlink/blob/%E7%A1%AC%E4%BB%B6%E8%AE%BE%E8%AE%A1/hardware/datasheets/KD021WVOSN009-C003B_%E8%A7%84%E6%A0%BC%E4%B9%A6%E7%B4%A2%E5%BC%95.md)：根据已校验的 V1.1 原件第 4 页整理，PDF 本体尚未上传。
