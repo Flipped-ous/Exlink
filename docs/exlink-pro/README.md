@@ -18,7 +18,8 @@
 - [R4 后续决议](sources/latest-decisions.md)
 - [S0-05 参考固件审计](source-audit.md)
 - [S0-06 Codex Arduino 技术栈与可靠性验证任务书](tasks/S0-06-codex-feasibility.md)
-- [软件架构初稿](architecture.md)
+- [软件架构评审稿](architecture.md)
+- [S0-08 固件工程目录与依赖规范](firmware-layout.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则
