@@ -10,6 +10,8 @@
 - [Companion](https://github.com/Flipped-ous/Exlink/tree/%E6%89%8B%E6%9C%BA%E5%8A%A9%E6%89%8B)（手机助手）
 - [Simulator](https://github.com/Flipped-ous/Exlink/tree/%E8%99%9A%E6%8B%9F%E8%AE%BE%E5%A4%87)（虚拟设备）
 - [分支管理规范](branches.md)
+- [Codex 全局开发规范](../../AGENTS.md)
+- [Codex 开发任务书模板](codex-task-template.md)
 - [公共协议](../../protocol/)
 - [第三方参考](../../third_party/)
 - [软件架构初稿](architecture.md)
@@ -20,3 +22,7 @@
 每个任务记录版本、变更、依赖、遗留问题及测试证据。区分规划、代码完成、模拟测试通过和实物验证通过。最终硬件网表是 GPIO 和接口的依据。技术选型须在依赖与编译验证后冻结。
 
 当前仓库公开；内部硬件文件、采购资料、密钥及未获许可的第三方固件不纳入本次提交。
+
+## 开发分工
+
+ChatGPT 负责需求、架构、任务书与审查；Codex 负责代码实现、构建和测试；用户负责最终决策与硬件验收。开发前须读取全局规范及当前任务书。
