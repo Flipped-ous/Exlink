@@ -14,6 +14,8 @@
 - [Codex 开发任务书模板](codex-task-template.md)
 - [公共协议](../../protocol/)
 - [第三方参考](../../third_party/)
+- [项目资料索引与最新来源](sources/README.md)
+- [R4 后续决议](sources/latest-decisions.md)
 - [软件架构初稿](architecture.md)
 - [阶段任务与进度](roadmap.md)
 
