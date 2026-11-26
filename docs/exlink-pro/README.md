@@ -25,6 +25,7 @@
 - [S0-11 内存与 Flash](firmware-memory.md)
 - [S0-12 模块通信与事件机制](firmware-events.md)
 - [S0-13 精简电源安全状态机](firmware-safety.md)
+- [S0-14 设备通信协议与双无线OTA](../../protocol/device-protocol.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则

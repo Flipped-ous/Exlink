@@ -1,0 +1,29 @@
+# S0-14｜设备通信协议 V0.2（用户确认设计方向）
+2026-11-26。统一设备管理与双无线 OTA；设计基准，不是已实现、已验收或冻结的线级协议。不得提前启动正式业务开发。
+
+## 双参考依据
+方屏固定版本 259434f5f6addb91ea0c2b1fa0ffe756d9f4d628：
+- docs/BLE_UPDATE_PROTOCOL.md：独立 GATT 管理服务，info/telemetry JSON，control/data/status 二进制 OTA；会话、offset、CRC32、SHA-256、END/ACTIVATE 分离、有限重连。原版最大 payload 480B，实际受 MTU 限制；不直接锁定本项目 UUID、MTU、超时或包大小。
+- docs/BLE_SERIAL_TEST.md、src/main.cpp 99–101、2325–2353、2452起：Nordic UART 类桥接；管理与桥接模式互斥、切换清旧队列。include/bridge_text_format.h：显示转义不改变传输原始字节。
+- include/device_update.h、include/ble_update_service.h：传输无关接收器与写入接口，回调不执行 Flash 或业务操作。原版升级失败可恢复输出、Just Works 不提供 MITM/所有权保障，SHA-256 不是发布者签名；不得照搬这些缺口。
+ExlinkPro 固定 README a04b557695003aed515300d4f3fdd2e858de81c9：BLE 串口调试器、原有换行显示约定、RP2040 sigrok UF2 及 CH549 独立 USB 维护。原作者资料包通信函数尚待重新逐项核对，不虚称已完成。保留原有能力，许可逐项核实。WebSocket、远端控制及 Wi-Fi OTA 为本项目新增设计，不冒称参考固件已有实现。
+
+## 连接及传输
+- Wi-Fi：局域网优先，支持设备热点供无路由器场景使用；WebSocket + JSON 为设备管理主协议候选；HTTP 可用于基础查询和 OTA 文件上传。大数据如示波器及 UART 原始字节用独立有界二进制通道。
+- BLE：参考 GATT 管理、发现、配网、基础控制与 OTA；原有 Nordic UART 类桥接优先兼容，模式互斥与 Wi-Fi/BLE 共存按负载验证。BLE 普通控制消息的分帧、MTU及流控待详细协议验证。
+- USB：保留 RP2040、CH549 原生工具协议与各自维护入口；ESP32 原生 USB 设备管理待实际连线和 SDK 配置核实，不把 CH549 目标串口当主控管理接口，不新增跨 MCU 连线。
+- 不依赖自建服务器、云账号、MQTT；首版不自造 TCP/UDP 管理协议。设备为权威状态来源，Mock/虚拟设备使用相同已批准协议。
+
+## 统一消息与模块
+概念示例（非最终 wire schema）：cmd {id:1001,type:"cmd",method:"power.set_voltage",params:{voltage_mv:5000}}；result {id:1001,type:"result",code:"OK",data:{target_mv:5000,output_enabled:false}}；telemetry {type:"telemetry",module:"power",data:{voltage_mv:4986,current_ua:125000,power_uw:623250,valid:true}}。三例相互独立，不表示关闭输出时仍测得实际目标电压。
+字段英文、界面中文，统一物理单位、有符号测量、时间戳、有效性、设备/协议版本与能力发现；区分请求接受、执行结果、实际测量验证，参考 S0-12 错误分类，数字/线上编码待确定。
+模块命名候选：device、power、meter、continuity、pwm、frequency、scope、i2c、uart、wireless、settings、ota、diagnostics。远端通断首版只读，本机开启；不能绕过安全互锁或宣称未接通硬件可控。
+推送初始建议：电源10Hz、独立电压表5–10Hz、电池1Hz、频率依门控、串口按接收、波形独立缓冲、诊断按需、故障及时通知且锁存状态可查询。不是采样/保护周期或保证的吞吐；按实测调整。
+
+## 权限与异常
+首次本机授权可信设备，后续认证重连，无反复无价值弹窗；局域网与 BLE 控制均鉴权，不信任客户端自报身份，具体加密/配对/密钥方案待验证，不默认明文口令或仅 Just Works 即可信。多端请求由对应服务串行化；本机及 Safety 最终裁决，普通断连不关正常输出，取消过期请求，重连读真实状态，不重放危险命令。会话范围请求ID去重、有限队列及结果信用、超时查询、过载流控；保护不依赖网络及时性。
+
+## 双无线 OTA（用户确认）
+Wi-Fi OTA 为主要方式，BLE OTA 为备用方式，两者共用一套传输无关升级状态机与唯一 Flash 写入所有者。USB 有线恢复为最终手段；首版仅 ESP32 OTA，RP2040/CH549 独立维护。设备设置、手机、电脑均规划升级管理入口，不因此承诺本机无包来源即可联网下载。固件与动画/UI资源可独立更新，匹配版本/完整性和原子激活，回滚保留兼容组合及内置恢复界面。参考 BEGIN/DATA/END/ACTIVATE/状态查询/ABORT；Wi-Fi HTTP 上传为候选，BLE 参考原二进制分包；两入口统一会话、容量检查、偏移、完整性、签名和硬件兼容校验，禁止并发写入。有限重试与会话内续传，不能承诺跨断电或进程丢失续传；ACTIVATE 结果未知时查询实际版本/健康状态，不盲重发。升级前可靠关闭危险输出、暂停冲突资源，失败/取消/重启后不自动恢复。双应用槽与双资源槽参考 S0-11，真实 bootloader 配置和签名后镜像容量、自检、回滚及 USB 恢复必须验证。无自建服务器，客户端本地提供合法升级包即可；签名私钥不得进仓库。签名校验不以 CRC/SHA 替代发布者认证。
+## 未闭环与验收
+实际 Wi-Fi/BLE/USB 库兼容性、内存/网络共存、鉴权方案、UUID/端点、精确编码/长度/超时/版本协商、测试向量、原作者通信函数、授权、真实连线待验证。测试错误/重复/截断/乱序消息、断连及重连、多端冲突、超时、过载、非法升级包、并发升级、资源版本不兼容、断电/回滚和恢复。无样机时先主机/Mock/构建验证；不宣称实测通过。S1未启动。
