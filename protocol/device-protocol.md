@@ -36,3 +36,6 @@ Wi-Fi OTA 为主要方式，BLE OTA 为备用方式，两者共用一套传输�
 
 ## S5-02 V0.1 配对及权限（用户确认）
 详见 [配对鉴权设计](../docs/exlink-pro/tasks/S5-02-auth-multiclient-design.md)。首次本机安全授权、独立客户端凭据、自动认证重连、撤销及两类信任权限；未授权仅发现及受限配对，可信操作仍受设备Safety/资源/能力及会话控制。拒绝过期冲突，通断远端只读，OTA须确认，安全握手及线级字段未冻结。无手动IP、账号或云依赖。
+
+## S5-03 V0.1 公共协议方向及三端权限修订（用户确认）
+详见 [公共协议设计](../docs/exlink-pro/tasks/S5-03-common-protocol-design.md) 与 [S5-02 V0.2](../docs/exlink-pro/tasks/S5-02-auth-multiclient-design.md)。本机最高操作优先级，Safety独立安全裁决，Studio/Mobile平级但功能范围不同；配对认证及有效连接后控制，三端同步权威状态；Mobile仅基础控制，具体白名单待S6-B。JSON命令/状态与独立二进制数据，统一物理单位、模块、消息、版本和测试向量方向确认，线上schema未冻结。禁止自报类型越权、重放旧控制；未授权S5实施。
