@@ -29,6 +29,7 @@
 - [S0-15 LVGL与组件化联合工作台](firmware-ui.md)
 - [S0-16 系统配置与数据存储](firmware-storage.md)
 - [S0-17 系统启动与低功耗管理](firmware-power-management.md)
+- [S0-18 OTA详细实现设计](firmware-ota.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则
