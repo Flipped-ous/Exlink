@@ -22,3 +22,6 @@ ExlinkPro 资料包 software/Exlink/my.csv 为15MiB factory 单槽，main.cpp 79
 
 ## S0-14 双无线OTA约束
 Wi-Fi主用、BLE备用共用升级状态机与写入所有者，验证双入口并发拒绝、流式写入缓冲、Wi-Fi/BLE峰值内部堆、签名后镜像及独立资源容量，禁止为传输方式重复预留整份固件缓存。当前分区仍是验证起点，未修改容量与偏移。详见 ../../protocol/device-protocol.md。
+
+## S0-16 配置及历史存储
+参见 firmware-storage.md；现有0x5000 NVS仅为候选容量，配置、连接凭据、模板、资源元数据与少量故障记录须共同验证预算及磨损。实时历史用有界RAM/PSRAM，长期历史由客户端保存；不增加数据库/SD卡，不调整分区。写入协调、掉电与回滚兼容须测试。
