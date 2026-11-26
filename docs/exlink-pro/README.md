@@ -1,6 +1,6 @@
 # EXLINK PRO 2.0｜整机开发管理入口
 
-状态：S0 源码审计与技术验证；ESP32 主框架已确认 Arduino-ESP32 + PlatformIO，具体版本、架构及实测尚未完成。
+状态：S0-06阶段性技术验收通过，首阶段ESP32依赖及开发分区已确认；S1无样机实施已授权、尚未交付，S0硬件/授权/OTA实测风险仍开放。S4详细UI暂缓，设计线优先S5。
 
 ## 模块分支
 
@@ -47,6 +47,8 @@
 - [S3-C 信号工具功能设计](tasks/S3-C-signal-tools-design.md)
 - [S3-D 调试工具功能设计](tasks/S3-D-debug-tools-design.md)
 - [S3-E 系统管理功能设计](tasks/S3-E-system-management-design.md)
+- [S0-06 最终阶段验收与开发基线](tasks/S0-06-final-acceptance.md)
+- [S1 Codex无样机实施任务书](tasks/S1-codex-foundation-implementation.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则
