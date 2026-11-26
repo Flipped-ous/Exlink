@@ -52,6 +52,7 @@
 - [S5-01 无线连接及设备发现](tasks/S5-01-connectivity-design.md)
 - [S5-02 设备配对、鉴权与多端控制](tasks/S5-02-auth-multiclient-design.md)
 - [S5-03 公共通信协议](tasks/S5-03-common-protocol-design.md)
+- [S5-04 实时数据传输与断连恢复](tasks/S5-04-stream-recovery-design.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则
