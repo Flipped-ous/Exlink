@@ -1,5 +1,5 @@
-# S0-10｜硬件资源管理 V0.1（用户确认方案）
-2026-11-26。用户确认资源管理设计；GPIO、并发能力及电气安全仍须最终网表、SDK及样机验证，不锁定生产参数。基于 R4 和 S0-09。参考方屏固定版本 main.cpp：https://github.com/hajimi-yzy/Exlink-Tool-Square/blob/259434f5f6addb91ea0c2b1fa0ffe756d9f4d628/src/main.cpp 。
+# S0-10｜硬件资源管理 V0.2（双参考复审确认）
+2026-11-26。用户确认资源管理设计；GPIO、并发能力及电气安全仍须最终网表、SDK及样机验证，不锁定生产参数。基于 R4 和 S0-09 V0.2。参考方屏固定版本 main.cpp：https://github.com/hajimi-yzy/Exlink-Tool-Square/blob/259434f5f6addb91ea0c2b1fa0ffe756d9f4d628/src/main.cpp 。
 
 ## ResourceManager
 统一资源申请、释放、冲突检测、权限检查、状态/所有者查询、安全回收；不把所有 I/O 串行化到单个任务。接口概念 acquire/release/checkConflict/getOwner/getStatus。多资源申请原子化，失败不得启动部分功能。停止驱动、DMA、中断、输出并确认无未完成引用后再释放；禁止仅清占用标志、强制删持锁任务或擅自抢占。资源类别按权限/使用方式定义，允许重叠（如 Flash 永久保留但访问受控共享）。
@@ -47,3 +47,6 @@
 
 ## 验收
 Mock/主机测试覆盖原子申请、并发竞争、拒绝、释放失败、故障回收、模式切换、OTA 独占、测量失效、任务/队列超时。样机验证 GPIO、ADC/LEDC/DMA/SPI/UART 真实资源、波形/争用、电源和带电保护、并发负载。未完成 S0-06 版本/依赖、网表和实物测试；S1 未启动。
+
+## 原有外设生命周期复用原则
+方屏 scope_capture.cpp 156–210 已实现 start/stop/owned/quiesce/resume 与 release_failed、generation、ADC1预占用；参考该生命周期，ResourceManager 只协调跨模块所有权，避免复制驱动内部状态。内部 I2C 保持独立所有者；PWM/PCNT 启停及 UART 冲突检查沿用已有行为并修正安全问题。方屏 GPIO6/7/43/44 还用于 SPI bridge（main.cpp 364–367），如确认保留须加入冲突组，不能当作已新增功能。OTA/休眠的暂停恢复参考原版，但危险输出不可自动恢复。每项固件任务先查两套参考源码，记录固定版本、文件/函数/行号、现有行为、缺陷、新板差异及授权；优先保留成熟行为并最小适配，必要时独立实现。没有源码或授权时明确缺口，不假称已读取或可复用；不为分层而重复封装或重写。方屏为主要软件技术参考，ExlinkPro 为 MP28167 等电源和原硬件工具参考。

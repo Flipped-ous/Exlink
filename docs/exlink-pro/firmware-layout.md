@@ -1,6 +1,6 @@
-# S0-08｜ESP32 固件工程目录与依赖规范 V0.1（评审稿）
+# S0-08｜ESP32 固件工程目录与依赖规范 V0.2（双参考复审确认）
 
-2026-11-26；基于已确认 Arduino-ESP32 + PlatformIO + FreeRTOS + LVGL，架构 V0.3。此文件仅规划目录和职责，不代表已经建立可编译工程或授权 S1 开工。
+2026-11-26；基于已确认 Arduino-ESP32 + PlatformIO + FreeRTOS + LVGL，架构 V0.4。此文件仅规划目录和职责，不代表已经建立可编译工程或授权 S1 开工。
 
 ## 三主控工程边界
 
@@ -77,8 +77,12 @@ PlatformIO 工程根为 firmware/esp32/，不是仓库根。建议未来建立�
 
 拟验证命令（配置实现后）：在 firmware/esp32/ 执行 pio run -e esp32_real、pio run -e esp32_mock、pio test -e native。当前未运行，不提供虚假通过记录。测试可分 test/test_power、test/test_measurement、test/test_resource、test/test_protocol、test/test_ota_policy 等；故障注入、主机逻辑与实机测试分别记证据。
 
-OTA 统一归 services/ota，启动确认归 system/boot，危险输出互锁归 services/safety。Update.h/esp_ota_* 同一写入所有者；签名校验、激活前校验、bootloader 配置、延迟确认与回滚继续遵守 V0.3；分区偏移和大小暂不锁定。不得在仓库中存储签名私钥、凭据、.pio/、本地缓存、无授权第三方镜像。版本锁定后记录可重复构建依赖、分区与 bootloader 哈希。
+OTA 统一归 services/ota，启动确认归 system/boot，危险输出互锁归 services/safety。Update.h/esp_ota_* 同一写入所有者；签名校验、激活前校验、bootloader 配置、延迟确认与回滚继续遵守 V0.4；分区偏移和大小暂不锁定。不得在仓库中存储签名私钥、凭据、.pio/、本地缓存、无授权第三方镜像。版本锁定后记录可重复构建依赖、分区与 bootloader 哈希。
 
 ## 当前状态
 
-管理分支先保存评审稿；嵌入式固件分支现有骨架 README 的 ESP-IDF 候选描述已过时，以项目总管理最新决议为准。后续经授权初始化正式工程时同步该 README、全局规则及批准的接口规范。S0-06 版本/依赖/OTA 验证、最新 PCB 网表和授权仍是阻塞项。下一步 FreeRTOS 任务划分与资源所有权设计；不提前固定栈大小、优先级、核心绑定、GPIO、Flash 分区或启动正式业务开发。
+管理分支先保存评审稿；嵌入式固件分支现有骨架 README 的 ESP-IDF 候选描述已过时，以项目总管理最新决议为准。后续经授权初始化正式工程时同步该 README、全局规则及批准的接口规范。S0-06 版本/依赖/OTA 验证、最新 PCB 网表和授权仍是阻塞项。任务、资源及内存见对应复审文档；不提前固定栈大小、优先级、核心绑定、GPIO、Flash 分区或启动正式业务开发。
+
+## 参考模块迁移规则
+每项固件任务先查两套参考源码，记录固定版本、文件/函数/行号、现有行为、缺陷、新板差异及授权；优先保留成熟行为并最小适配，必要时独立实现。没有源码或授权时明确缺口，不假称已读取或可复用；不为分层而重复封装或重写。方屏为主要软件技术参考，ExlinkPro 为 MP28167 等电源和原硬件工具参考。
+方屏 internal_i2c_service、scope_capture、scope_math、device_ota_sink、ble_update_service、device_update、screen_asset、app_log、display_geometry 优先参考并按功能迁移；保留合理粒度，不重复造轮子。原版 MP28167 参考寄存器及步进，独立安全和错误处理；不得沿用 MCP4017。目录是职责规划而非强制拆分；loopTask 可作为初期 UI 所有者并运行有界非阻塞模块，不堆积业务实现。
