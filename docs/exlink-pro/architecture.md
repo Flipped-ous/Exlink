@@ -8,7 +8,7 @@ ESP32 主固件负责设备控制、测量、UI 和通信；RP2040 独立负责�
 
 - ESP32：用户于 2026-11-26 确认 PlatformIO + Arduino-ESP32 + FreeRTOS + LVGL，C/C++；必要时使用与 Arduino Core 匹配的 ESP-IDF 原生 API。具体依赖版本仍待构建验证，不默认采用旧版或最新版，不默认迁移原生 ESP-IDF 或 Arduino Component。
 - Studio：现有 Electron 工程保留；不因早期候选方案而强制迁移 Tauri。
-- Companion：Flutter/Dart 候选，Android 优先。
+- EXLINK Mobile：Flutter/Dart 候选，Android 优先。
 - Simulator：固件 Mock HAL 和独立 Python 模拟服务候选。
 - Protocol：统一命令、应答、状态、事件与版本；局域网优先，原生 USB 工具协议保持独立。
 
@@ -76,7 +76,7 @@ Update.h 作为固件写入候选；与原生 esp_ota_* API 使用同一升级�
 
 ## 模块通信与界面语言
 
-参见 [S0-12 模块通信与事件机制](firmware-events.md)。统一命令入口、服务状态快照、轻量事件通道及独立高频数据流；安全关断独立于普通队列。所有用户可见界面统一简体中文，包括设备 LVGL、手机 Companion、电脑 Studio、虚拟设备界面、设置/系统诊断、OTA、弹窗、错误及状态提示。USB、Wi-Fi、BLE、PWM、I²C、UART 等标准缩写及品牌名称可保留；内部代码标识符、协议字段、错误码仍用英文，界面映射中文文案。集中管理文案及中文字体，嵌入式优先验证字库裁剪、缺字及内存占用；首版不额外增加多语言切换。
+参见 [S0-12 模块通信与事件机制](firmware-events.md)。统一命令入口、服务状态快照、轻量事件通道及独立高频数据流；安全关断独立于普通队列。所有用户可见界面统一简体中文，包括设备 LVGL、手机 EXLINK Mobile、电脑 Studio、虚拟设备界面、设置/系统诊断、OTA、弹窗、错误及状态提示。USB、Wi-Fi、BLE、PWM、I²C、UART 等标准缩写及品牌名称可保留；内部代码标识符、协议字段、错误码仍用英文，界面映射中文文案。集中管理文案及中文字体，嵌入式优先验证字库裁剪、缺字及内存占用；首版不额外增加多语言切换。
 
 ## 电源安全设计
 

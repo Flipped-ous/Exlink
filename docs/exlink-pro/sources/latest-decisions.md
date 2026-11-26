@@ -39,3 +39,5 @@
 - 用户确认 S0-18 V0.1：GitHub Releases 发布与本地导入，Wi-Fi 主/BLE 备统一升级，优先验证 esp_ota_*，签名+SHA-256、非活动双槽、健康检查及回滚、USB恢复；首版不强制跨掉电续传或跨通道无缝切换，界面精简。正式Release、签名方案、依赖、实际回滚及断电测试未完成。
 
 - 用户确认S0-19 V0.2：固件级模拟为目标，轻量协议模拟先期联调；优先复用现成模拟器，PC LVGL/Mock HAL、Native及后续MCU Mock分层验证，不替代实物。LVGL PC、Wokwi、QEMU、esp-emulator为调研候选，未锁定依赖或开始实现。
+
+- 用户确认手机助手对外品牌名由 EXLINK Companion 改为 EXLINK Mobile；现有 companion/ 工程目录、手机助手分支及历史资料保留，旧称指同一产品。S0-20 其余架构方案仍待单独确认。

@@ -7,7 +7,7 @@
 - [硬件](https://github.com/Flipped-ous/Exlink/tree/%E7%A1%AC%E4%BB%B6%E8%AE%BE%E8%AE%A1)（硬件设计）
 - [设备固件](https://github.com/Flipped-ous/Exlink/tree/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%9B%BA%E4%BB%B6)（嵌入式固件）
 - [Studio](https://github.com/Flipped-ous/Exlink/tree/%E8%B0%83%E8%AF%95%E5%8A%A9%E6%89%8B)（调试助手，现有 Electron 工程）
-- [Companion](https://github.com/Flipped-ous/Exlink/tree/%E6%89%8B%E6%9C%BA%E5%8A%A9%E6%89%8B)（手机助手）
+- [EXLINK Mobile](https://github.com/Flipped-ous/Exlink/tree/%E6%89%8B%E6%9C%BA%E5%8A%A9%E6%89%8B)（手机助手）
 - [Simulator](https://github.com/Flipped-ous/Exlink/tree/%E8%99%9A%E6%8B%9F%E8%AE%BE%E5%A4%87)（虚拟设备）
 - [分支管理规范](branches.md)
 - [Codex 全局开发规范](../../AGENTS.md)
@@ -39,7 +39,7 @@
 
 每项设计经用户明确确认后提交，下一项单独评审。
 
-所有用户可见界面统一简体中文，包括设备 LVGL、手机 Companion、电脑 Studio、虚拟设备界面、设置/系统诊断、OTA、弹窗、错误及状态提示。USB、Wi-Fi、BLE、PWM、I²C、UART 等标准缩写及品牌名称可保留；内部代码标识符、协议字段、错误码仍用英文，界面映射中文文案。集中管理文案及中文字体，嵌入式优先验证字库裁剪、缺字及内存占用；首版不额外增加多语言切换。
+所有用户可见界面统一简体中文，包括设备 LVGL、手机 EXLINK Mobile、电脑 Studio、虚拟设备界面、设置/系统诊断、OTA、弹窗、错误及状态提示。USB、Wi-Fi、BLE、PWM、I²C、UART 等标准缩写及品牌名称可保留；内部代码标识符、协议字段、错误码仍用英文，界面映射中文文案。集中管理文案及中文字体，嵌入式优先验证字库裁剪、缺字及内存占用；首版不额外增加多语言切换。
 
 每个任务记录版本、变更、依赖、遗留问题及测试证据。区分规划、代码完成、模拟测试通过和实物验证通过。最终硬件网表是 GPIO 和接口的依据。具体依赖版本须在兼容性及编译验证后冻结；已确认的 Arduino 框架不得自行变更。
 
@@ -48,3 +48,5 @@
 ## 开发分工
 
 ChatGPT 负责需求、架构、任务书与审查；Codex 负责代码实现、构建和测试；用户负责最终决策与硬件验收。开发前须读取全局规范及当前任务书。
+
+手机助手对外名称为 EXLINK Mobile（原 EXLINK Companion），工程目录仍为 companion/，中文分支名仍为手机助手；历史资料中的 Companion 指同一产品。
