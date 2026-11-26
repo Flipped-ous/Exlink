@@ -50,6 +50,7 @@
 - [S0-06 最终阶段验收与开发基线](tasks/S0-06-final-acceptance.md)
 - [S1 Codex无样机实施任务书](tasks/S1-codex-foundation-implementation.md)
 - [S5-01 无线连接及设备发现](tasks/S5-01-connectivity-design.md)
+- [S5-02 设备配对、鉴权与多端控制](tasks/S5-02-auth-multiclient-design.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则
