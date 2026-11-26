@@ -41,6 +41,7 @@
 - [S1-05 命令、事件与状态管理详细设计](tasks/S1-05-events-state-design.md)
 - [S1-06 至 S1-10 基础工程合并设计](tasks/S1-06-10-foundation-review.md)
 - [S0-06A 最小工程交付证据审查摘要](tasks/S0-06A-review-summary.md)
+- [S2 虚拟设备合并详细设计](tasks/S2-simulator-detailed-design.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则

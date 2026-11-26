@@ -64,11 +64,11 @@ P0为对应模块正式开发前需闭环的前置阻塞；真实硬件行为无
 ### S2 虚拟设备
 | ID | 任务 |
 |---|---|
-| S2-01 | LVGL官方模拟器移植验证 |
-| S2-02 | 协议模拟服务 |
-| S2-03 | 虚拟硬件模型 |
-| S2-04 | 故障注入 |
-| S2-05 | 自动化测试 |
+| S2-01 | LVGL官方模拟器移植验证；[设计方向已确认，待实施](tasks/S2-simulator-detailed-design.md) |
+| S2-02 | 协议模拟服务；[设计方向已确认，待实施](tasks/S2-simulator-detailed-design.md) |
+| S2-03 | 虚拟硬件模型；[设计方向已确认，待实施](tasks/S2-simulator-detailed-design.md) |
+| S2-04 | 故障注入；[设计方向已确认，待实施](tasks/S2-simulator-detailed-design.md) |
+| S2-05 | 自动化测试；[设计方向已确认，待实施](tasks/S2-simulator-detailed-design.md) |
 按S0-19优先现成工具，轻量协议模拟先期联调、固件级主机模拟为目标。可重复场景、故障恢复、状态一致性、清晰模拟标识；不代替真实电气/MCU时序测试。
 
 ### S3 固件业务
