@@ -74,8 +74,8 @@ P0为对应模块正式开发前需闭环的前置阻塞；真实硬件行为无
 ### S3 固件业务
 | ID | 任务 |
 |---|---|
-| S3-01 | 内部I2C服务 |
-| S3-02 | 电源安全服务 |
+| S3-01 | 内部I2C服务；[功能设计已确认，待实施及验证](tasks/S3-E-system-management-design.md) |
+| S3-02 | 电源安全服务；[功能设计已确认，待实施及验证](tasks/S3-E-system-management-design.md) |
 | S3-03 | MP28167数控电源；[功能设计已确认，待实施](tasks/S3-A-power-design.md) |
 | S3-04 | INA226测量与校准接口；[功能设计已确认，待实施](tasks/S3-A-power-design.md) |
 | S3-05 | TLA2528及电压测量；[功能设计已确认，待实施](tasks/S3-B-measurement-design.md) |
@@ -86,7 +86,7 @@ P0为对应模块正式开发前需闭环的前置阻塞；真实硬件行为无
 | S3-10 | 外部I2C工具；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
 | S3-11 | UART及无线串口；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
 | S3-12 | 无线下载可行性与目标协议；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
-| S3-13 | 电池及低功耗 |
+| S3-13 | 电池及低功耗；[功能设计已确认，待实施及验证](tasks/S3-E-system-management-design.md) |
 | S3-14 | 电源预设、时序及能量统计；[功能设计已确认，待实施](tasks/S3-A-power-design.md) |
 | S3-15 | RP2040固件适配；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
 | S3-16 | CH549固件适配；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
