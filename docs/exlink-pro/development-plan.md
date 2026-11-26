@@ -50,7 +50,7 @@ P0为对应模块正式开发前需闭环的前置阻塞；真实硬件行为无
 | ID | 任务 |
 |---|---|
 | S1-01 | PlatformIO工程初始化；[详细设计已确认，待实施](tasks/S1-01-foundation-design.md) |
-| S1-02 | BSP板级接口 |
+| S1-02 | BSP板级接口；[详细设计已确认，待实施](tasks/S1-02-bsp-design.md) |
 | S1-03 | Real HAL与Mock HAL |
 | S1-04 | 日志与系统诊断 |
 | S1-05 | 命令、事件及状态管理 |
