@@ -7,7 +7,7 @@ ESP32 主固件负责设备控制、测量、UI 和通信；RP2040 独立负责�
 ## 技术路线
 
 - ESP32：用户于 2026-11-26 确认 PlatformIO + Arduino-ESP32 + FreeRTOS + LVGL，C/C++；必要时使用与 Arduino Core 匹配的 ESP-IDF 原生 API。具体依赖版本仍待构建验证，不默认采用旧版或最新版，不默认迁移原生 ESP-IDF 或 Arduino Component。
-- Studio：现有 Electron 工程保留；不因早期候选方案而强制迁移 Tauri。
+- Studio：现有 Electron 基础工程与功能原型作为参考；不默认迁移 Tauri，内部架构与实现细节待复审。
 - EXLINK Mobile：Flutter/Dart 候选，Android 优先。
 - Simulator：固件 Mock HAL 和独立 Python 模拟服务候选。
 - Protocol：统一命令、应答、状态、事件与版本；局域网优先，原生 USB 工具协议保持独立。
@@ -105,3 +105,6 @@ Update.h 作为固件写入候选；与原生 esp_ota_* API 使用同一升级�
 
 ## EXLINK Mobile 手机助手
 参见 [S0-20](mobile-design.md)。Flutter/Dart、Android优先，局域网/设备热点及BLE，四页导航与组件化工作台、长期本地记录、OTA和桌宠管理；设备权威状态与安全互锁不变，无云账号/自建服务器。依赖、协议及界面仍待验证。
+
+## EXLINK Studio 集成
+参见 [S0-21 V0.2](studio-integration.md)。保留Electron基础框架，现有功能仅原型、未验收；UI与交互重新设计，合理代码按审查复用或局部重构。通用调试独立可用，共享连接、多标签、组件化与真实设备协议集成；不冻结现有界面。详细设计与用户验收另行进行。
