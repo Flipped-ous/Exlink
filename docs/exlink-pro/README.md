@@ -33,6 +33,7 @@
 - [S0-19 虚拟设备与模拟测试](simulator-design.md)
 - [S0-20 EXLINK Mobile 手机助手架构](mobile-design.md)
 - [S0-21 EXLINK Studio 集成架构](studio-integration.md)
+- [S0-22 总体复审与开发任务拆分](development-plan.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则
