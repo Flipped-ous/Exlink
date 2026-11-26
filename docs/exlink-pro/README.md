@@ -36,6 +36,7 @@
 - [S0-22 总体复审与开发任务拆分](development-plan.md)
 - [S1-01 固件基础工程详细设计](tasks/S1-01-foundation-design.md)
 - [S1-02 BSP板级支持包详细设计](tasks/S1-02-bsp-design.md)
+- [S1-03 HAL硬件抽象层详细设计](tasks/S1-03-hal-design.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则
