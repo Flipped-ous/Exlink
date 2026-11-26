@@ -45,6 +45,7 @@
 - [S3-A 数控电源功能设计](tasks/S3-A-power-design.md)
 - [S3-B 测量系统功能设计](tasks/S3-B-measurement-design.md)
 - [S3-C 信号工具功能设计](tasks/S3-C-signal-tools-design.md)
+- [S3-D 调试工具功能设计](tasks/S3-D-debug-tools-design.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则

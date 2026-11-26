@@ -83,13 +83,13 @@ P0为对应模块正式开发前需闭环的前置阻塞；真实硬件行为无
 | S3-07 | PWM信号发生；[功能设计已确认，待实施](tasks/S3-C-signal-tools-design.md) |
 | S3-08 | 数字频率计；[功能设计已确认，待实施](tasks/S3-C-signal-tools-design.md) |
 | S3-09 | 简易示波器；[功能设计已确认，待实施](tasks/S3-C-signal-tools-design.md) |
-| S3-10 | 外部I2C工具 |
-| S3-11 | UART及无线串口 |
-| S3-12 | 无线下载可行性与目标协议 |
+| S3-10 | 外部I2C工具；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
+| S3-11 | UART及无线串口；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
+| S3-12 | 无线下载可行性与目标协议；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
 | S3-13 | 电池及低功耗 |
 | S3-14 | 电源预设、时序及能量统计；[功能设计已确认，待实施](tasks/S3-A-power-design.md) |
-| S3-15 | RP2040固件适配 |
-| S3-16 | CH549固件适配 |
+| S3-15 | RP2040固件适配；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
+| S3-16 | CH549固件适配；[功能设计已确认，待实施及验证](tasks/S3-D-debug-tools-design.md) |
 任务序号为索引而非严格串行；安全、测量、总线相关依赖需满足后才能真实启用。独立RP2040/CH549授权与接口先核，未授权二进制不得分发。双参考源码审查为固件任务必填。
 
 ### S4–S7（详细任务后续拆分）
