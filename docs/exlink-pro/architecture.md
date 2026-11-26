@@ -65,3 +65,7 @@ Update.h 作为固件写入候选；与原生 esp_ota_* API 使用同一升级�
 ## FreeRTOS 任务规划
 
 参见 [S0-09 FreeRTOS 任务与调度设计](firmware-tasks.md)。六个常驻应用任务、两个按需任务为评审起点；核心亲和性、优先级、栈、周期经实测调整。
+
+## 硬件资源管理
+
+参见 [S0-10 硬件资源管理](firmware-resources.md)；用户已确认 ResourceManager、资源分类、互斥与安全切换方案。实际 GPIO 和并发能力待验证。

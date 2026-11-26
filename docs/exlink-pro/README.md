@@ -21,6 +21,7 @@
 - [软件架构评审稿](architecture.md)
 - [S0-08 固件工程目录与依赖规范](firmware-layout.md)
 - [S0-09 FreeRTOS 任务与调度设计](firmware-tasks.md)
+- [S0-10 硬件资源管理](firmware-resources.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则
