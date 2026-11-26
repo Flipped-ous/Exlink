@@ -38,6 +38,7 @@
 - [S1-02 BSP板级支持包详细设计](tasks/S1-02-bsp-design.md)
 - [S1-03 HAL硬件抽象层详细设计](tasks/S1-03-hal-design.md)
 - [S1-04 日志与系统诊断详细设计](tasks/S1-04-logging-diagnostics-design.md)
+- [S1-05 命令、事件与状态管理详细设计](tasks/S1-05-events-state-design.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则
