@@ -54,11 +54,11 @@ P0为对应模块正式开发前需闭环的前置阻塞；真实硬件行为无
 | S1-03 | Real HAL与Mock HAL；[详细设计已确认，待实施](tasks/S1-03-hal-design.md) |
 | S1-04 | 日志与系统诊断；[详细设计已确认，待实施](tasks/S1-04-logging-diagnostics-design.md) |
 | S1-05 | 命令、事件及状态管理；[详细设计已确认，待实施](tasks/S1-05-events-state-design.md) |
-| S1-06 | ResourceManager |
-| S1-07 | 配置与持久化 |
-| S1-08 | 基础任务与启动流程 |
-| S1-09 | 公共协议字段及测试向量 |
-| S1-10 | 基础工程验收 |
+| S1-06 | ResourceManager；[设计方向已确认，待实施](tasks/S1-06-10-foundation-review.md) |
+| S1-07 | 配置与持久化；[设计方向已确认，待实施](tasks/S1-06-10-foundation-review.md) |
+| S1-08 | 基础任务与启动流程；[设计方向已确认，待实施](tasks/S1-06-10-foundation-review.md) |
+| S1-09 | 公共协议字段及测试向量；[设计方向已确认，待实施](tasks/S1-06-10-foundation-review.md) |
+| S1-10 | 基础工程验收；[设计方向已确认，待实施](tasks/S1-06-10-foundation-review.md) |
 真实HAL未知映射不得编造；有界资源、独立安全路径、native/mock/real构建隔离、状态和错误一致性。S1-09与S2-02及客户端联调共用已批准协议，不允许各分支私定协议。
 
 ### S2 虚拟设备
