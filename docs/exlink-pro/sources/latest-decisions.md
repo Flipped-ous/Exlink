@@ -41,3 +41,5 @@
 - 用户确认S0-19 V0.2：固件级模拟为目标，轻量协议模拟先期联调；优先复用现成模拟器，PC LVGL/Mock HAL、Native及后续MCU Mock分层验证，不替代实物。LVGL PC、Wokwi、QEMU、esp-emulator为调研候选，未锁定依赖或开始实现。
 
 - 用户确认手机助手对外品牌名由 EXLINK Companion 改为 EXLINK Mobile；现有 companion/ 工程目录、手机助手分支及历史资料保留，旧称指同一产品。S0-20 其余架构方案仍待单独确认。
+
+- 用户确认 S0-20 V0.1：EXLINK Mobile采用Flutter/Dart优先、Android首版、iOS后续评估，设备/工作台/记录/设置四导航候选，组件复用、统一连接及协议、局域网/热点/BLE、本地记录及CSV、OTA与桌宠资源管理，无云账号和自建服务器。具体库、UI及真机能力未冻结，保留companion/目录。

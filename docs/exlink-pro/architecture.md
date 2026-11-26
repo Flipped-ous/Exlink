@@ -102,3 +102,6 @@ Update.h 作为固件写入候选；与原生 esp_ota_* API 使用同一升级�
 
 ## 虚拟设备与模拟测试
 参见 [S0-19](simulator-design.md)。固件级PC模拟（真实LVGL/可移植业务+Mock HAL）为目标，轻量协议模拟器先行；复用现有工具，Native与真机测试区分，不保证模拟等同真实硬件。
+
+## EXLINK Mobile 手机助手
+参见 [S0-20](mobile-design.md)。Flutter/Dart、Android优先，局域网/设备热点及BLE，四页导航与组件化工作台、长期本地记录、OTA和桌宠管理；设备权威状态与安全互锁不变，无云账号/自建服务器。依赖、协议及界面仍待验证。
