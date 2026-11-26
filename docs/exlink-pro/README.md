@@ -26,6 +26,7 @@
 - [S0-12 模块通信与事件机制](firmware-events.md)
 - [S0-13 精简电源安全状态机](firmware-safety.md)
 - [S0-14 设备通信协议与双无线OTA](../../protocol/device-protocol.md)
+- [S0-15 LVGL与组件化联合工作台](firmware-ui.md)
 - [阶段任务与进度](roadmap.md)
 
 ## 管理规则

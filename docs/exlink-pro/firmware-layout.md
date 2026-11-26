@@ -86,3 +86,6 @@ OTA 统一归 services/ota，启动确认归 system/boot，危险输出互锁归
 ## 参考模块迁移规则
 每项固件任务先查两套参考源码，记录固定版本、文件/函数/行号、现有行为、缺陷、新板差异及授权；优先保留成熟行为并最小适配，必要时独立实现。没有源码或授权时明确缺口，不假称已读取或可复用；不为分层而重复封装或重写。方屏为主要软件技术参考，ExlinkPro 为 MP28167 等电源和原硬件工具参考。
 方屏 internal_i2c_service、scope_capture、scope_math、device_ota_sink、ble_update_service、device_update、screen_asset、app_log、display_geometry 优先参考并按功能迁移；保留合理粒度，不重复造轮子。原版 MP28167 参考寄存器及步进，独立安全和错误处理；不得沿用 MCP4017。目录是职责规划而非强制拆分；loopTask 可作为初期 UI 所有者并运行有界非阻塞模块，不堆积业务实现。
+
+## S0-15 页面与工作台组织
+在现有 app/ui、app/navigation、app/interaction、app/pet 内按需组织可复用工具界面及轻量工作台会话管理，使用已有 services、system/resources；不另建重复驱动/业务服务或为每个工具强制创建任务。具体目录按实现需要确定，详见 firmware-ui.md。
