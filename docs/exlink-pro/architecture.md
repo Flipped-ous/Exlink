@@ -99,3 +99,6 @@ Update.h 作为固件写入候选；与原生 esp_ota_* API 使用同一升级�
 
 ## OTA 详细设计
 参见 [S0-18 OTA详细实现](firmware-ota.md)。GitHub Releases及本地导入，Wi-Fi主/BLE备，统一接收与写入，优先验证esp_ota_*，签名及完整性验证后激活，健康检查后确认；首版不强制跨掉电续传或跨通道无缝接力。发布、实际依赖、回滚及恢复尚待验证。
+
+## 虚拟设备与模拟测试
+参见 [S0-19](simulator-design.md)。固件级PC模拟（真实LVGL/可移植业务+Mock HAL）为目标，轻量协议模拟器先行；复用现有工具，Native与真机测试区分，不保证模拟等同真实硬件。
