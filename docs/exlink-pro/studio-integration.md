@@ -34,3 +34,6 @@ Windows优先的通用嵌入式调试助手，不依赖购买/连接EXLINK PRO�
 
 ## 2026-11-26 S5-02/03 用户权限修订（现行）
 EXLINK设备管理须配对认证并有效连接后开放控制，三端同步设备权威状态；本机最高操作优先，Studio与Mobile平级，Safety独立；Studio专业控制范围待S6-A确认，Mobile仅基础控制。Studio的独立通用串口/网络及原生USB工具不强制EXLINK无线配对。详见tasks/S5-03-common-protocol-design.md。
+
+## 三端数据查看补充（现行）
+Mobile与Studio具有相同的可提供设备业务数据查看范围，仅Mobile控制能力缩减。独立USB数据向Mobile转发需单独评估实际接口、认证、隐私、带宽及生命周期；未授权转发开发，不把Studio所有本地文件/通用串口数据自动共享给手机。
