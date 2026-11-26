@@ -61,3 +61,7 @@ Update.h 作为固件写入候选；与原生 esp_ota_* API 使用同一升级�
 ## 工程组织
 
 参见 [S0-08 固件工程目录与依赖规范](firmware-layout.md)。目录按需建立，PlatformIO 工程根为 firmware/esp32/；纯业务逻辑可主机测试，三主控独立构建。
+
+## FreeRTOS 任务规划
+
+参见 [S0-09 FreeRTOS 任务与调度设计](firmware-tasks.md)。六个常驻应用任务、两个按需任务为评审起点；核心亲和性、优先级、栈、周期经实测调整。
