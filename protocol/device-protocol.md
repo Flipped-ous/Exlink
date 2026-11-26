@@ -30,3 +30,6 @@ Wi-Fi OTA 为主要方式，BLE OTA 为备用方式，两者共用一套传输�
 
 ## S0-18 详细升级设计
 参见 [OTA详细实现](../docs/exlink-pro/firmware-ota.md)。GitHub Releases和本地导入为客户端包来源；设备独立签名验证，优先验证原生esp_ota_*，首版不强制跨掉电续传或跨通道无缝接力；实际线上协议、签名格式及超时仍待冻结。
+
+## S5-01 V0.2 连接体验修订（用户确认）
+详见 [连接设计](../docs/exlink-pro/tasks/S5-01-connectivity-design.md)。取消用户手动输入IP/端口入口；mDNS自动发现，已认证BLE辅助获取网络地址及AP热点回退为候选，IP仅内部使用及诊断；地址发现不替代身份认证。具体跨平台能力、回退行为及鉴权待验证。
