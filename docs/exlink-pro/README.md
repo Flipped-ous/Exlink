@@ -73,3 +73,6 @@
 ChatGPT 负责需求、架构、任务书与审查；Codex 负责代码实现、构建和测试；用户负责最终决策与硬件验收。开发前须读取全局规范及当前任务书。
 
 手机助手对外名称为 EXLINK Mobile（原 EXLINK Companion），工程目录仍为 companion/，中文分支名仍为手机助手；历史资料中的 Companion 指同一产品。
+
+## Studio 当前前置任务
+[S6-A00 工程治理与核心架构重构（Codex任务书）](tasks/S6-A00-studio-foundation-refactor.md)。优先于Studio新业务开发，待实际实现与验收。
